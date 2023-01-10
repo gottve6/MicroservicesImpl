@@ -1,0 +1,126 @@
+String name = "Hackerearth";
+		for (int i = 0; i < name.length(); i++) {
+			System.out.print(name.charAt(i + 1));
+		} // ackerearth
+----------
+int[] array = { 3, 6, 9, 5 };
+		List<Integer> arrayList = new ArrayList<>();
+		arrayList.add(array[0]);
+		arrayList.add(array[2]);
+		arrayList.set(1, array[0]);
+		arrayList.set(1, array[1]);
+		arrayList.remove(0);
+		arrayList.add(array[0]);
+		System.out.println(arrayList); // [6, 3]
+--------------------
+// http://localhost:8080/users/1011
+	@GetMapping("/{userId}")
+	public String getUser(@PathVariable String userId) {
+		return "get user was called with :"+userId;
+	}
+-------
+// http://localhost:8080/users?id=1011&name=venu
+	@GetMapping
+	public String getUsers(@RequestParam(value="id") String id, @RequestParam("name") String name) {
+		return "get user was called with "+id+" and "+name;
+	}
+-------------
+to make inputs Optional 
+// http://localhost:8080/users
+		@GetMapping
+		public String getUsers(@RequestParam(value="id",defaultValue ="1") String id, @RequestParam(value="name", defaultValue = "venu") String name) {
+			return "get user was called with "+id+" and "+name;
+		}
+// http://localhost:8080/users?id=2&name=venkat ==> we can wrote this but output gives 2 and venkat
+------------
+@GetMapping("/{userId}")
+	public ResponseEntity<User> getUser(@PathVariable String userId) {
+		User user  = new User();
+		user.setUid(101);
+		user.setUname("venkat");
+		
+		return new ResponseEntity<User>(HttpStatus.OK);
+	}
+---------------------
+Eureka server:
+add dependencies like 
+<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-server -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+			<version>4.0.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			<version>4.0.0</version>
+		</dependency>
+
+add @EnableEurekaServer
+properties file:
+eureka.client.registerWithEureka = false
+eureka.client.fetchRegistry = false
+server.port = 8761
+
+DiscoveryClinet:
+@@EnableDiscoveryClient
+spring.application.name = User-service
+server.port=9091
+eureka.client.serviceUrl.defaultZone  = http://localhost:9090/eureka
+spring.devtools.restart.enabled=true
+---------------------
+API Gateway:
+Zuul API gateway:
+<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-zuul -->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-zuul</artifactId>
+    <version>1.4.7.RELEASE</version>
+</dependency>
+
+@EnableDiscoveryClient
+@ZuulProxyServer
+we have to add this property in properties file
+==> spring.cloud.gateway.discovery.locator.enabled=true
+
+==> After running user service and Gateway service, we can access user controller class method by using gateway port
+EX: user ==> http://localhost:9191
+gateway==> http://localhost:9099
+we can access like http://localhost:9099/<spring-application-name>(user-service)/<requestMapping>/get(getMapping("/get")
+
+
+==> spring.cloud.gateway.discovery.locator.lower-case-service-id=true
+USER-SERVICE ==> we can access by using lower case letters also
+
+Service class:
+-------------
+ModelMapper => is used to map the source to destination
+
+security:
+--------
+Allow access to different logins:
+---------------------------
+public void configure(HttpSecurity http) throws Exception{
+htp.csrf().disabled();
+http.headers().frameOptions().disabled();
+httpauthorizedRequests().
+.anyMatchers(environment.getProperty("api.h2console.url.path")).permitAll().
+.anyMatchers(HttpMethod.POST, environment.getProperty("api.h2console.url.path")).permitAll().
+.anyMatchers(HttpMethod.POST, environment.getProperty("api.h2console.url.path")).permitAll().
+anyRequest().authenticated();
+-------
+propertiles file:
+-----------------
+api.h2console.url.path=/users-ws/h2-console/**
+api.registration.url.path=users-ws/users
+api.login.url.path=/users-ws/users/login
+
+Config Server:
+-------------
+Added config server dependency
+
+
+
+
+}
