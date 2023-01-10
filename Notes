@@ -1,0 +1,193 @@
+sum of integer:
+----------------
+Arrays.stream() method is overloaded for arrays of int, double and long type.
+which allows you to get a sum of elements.
+	
+	int[] arrays = {1,3,5,7,9};
+		
+		//int sum = Arrays.stream(arrays).sum(); //
+		// int sum = IntStream.of(arrays).sum();
+		//int sum = Arrays.stream(arrays).reduce((x,y)->x+y).getAsInt();
+		//int sum = Arrays.stream(arrays).reduce(Integer::sum).getAsInt();
+		//int sum = Arrays.stream(arrays).reduce(0, Integer::sum);
+		IntSummaryStatistics stat = new IntSummaryStatistics();
+		for(int i:arrays) {
+			stat.accept(i);
+		}
+		long sum = stat.getSum();	 
+		System.out.println(sum);
+		(or)
+
+List<Integer> listOfInt = Arrays.asList(1,3,5,7,9);
+		
+		//int sum =listOfInt.stream().mapToInt(Integer::intValue).sum();
+		//int sum = listOfInt.stream().mapToInt(i->i).sum();
+		
+		int sum = listOfInt.stream().collect(Collectors.summingInt(Integer::intValue));
+		System.out.println(sum);
+---------------------------
+Min and Max:
+------------
+List<Integer> ll = Arrays.asList(40, 32, 53, 22, 11, 89,76);
+		
+		OptionalInt min = ll.stream().mapToInt(i->i).min();
+		
+		int min2 = ll.stream().mapToInt(i->i).min().orElseThrow(NoSuchFieldException::new);
+		System.out.println("MIN:"+min+": MIN "+min2);
+		
+		int min3 = ll.stream().min(Comparator.comparing(Integer::valueOf)).get();
+		// same for max
+		---------
+		List<Integer> numbers = Arrays.asList(14,4,11,78,2,99,7);
+		Integer minNum = numbers.stream().min((s1, s2) -> s1.compareTo(s2)).get();
+		
+		Integer maxNum = numbers.stream().max((s1, s2) -> s1.compareTo(s2)).get();
+		System.out.println("minNum :"+minNum+" maxNum :"+maxNum);
+--------------------------
+Even Number:
+-------------
+without stream:
+--------------
+List<Integer> numberList = new ArrayList<>();
+		for (int i = 1; i <= 10; i++) {
+			numberList.add(i);
+		}
+		System.out.println(numberList);// [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+		List<Integer> secondNumberList = new ArrayList<>();
+		for (Integer i1 : numberList) {
+			if (i1 % 2 == 0) {
+				secondNumberList.add(i1);
+			}
+		}
+		System.out.println(secondNumberList);// [2, 4, 6, 8, 10]
+with stream:
+-----------
+List<Integer> list1 = new ArrayList<>();
+		for(int i=0;i<10;i++) {
+			list1.add(i);
+		}
+		System.out.println(list1);
+		List<Integer> list2 = list1.stream().filter(i->i%2==0).collect(Collectors.toList());
+		System.out.println(list2);
+		}
+collect and count:
+------------------
+List<String> nameList = new ArrayList<>();
+		nameList.add("wiiliam son");
+		nameList.add("virat");
+		nameList.add("dhoni");
+		nameList.add("smith");
+		nameList.add("morgan");
+		nameList.add("maxwell");
+		System.out.println(nameList);
+		
+		List<String> nameList2 = nameList.stream().map(s->s.toUpperCase()).collect(Collectors.toList());
+		System.out.println(nameList2);
+		
+		Long nameList3 = nameList.stream().filter(s->s.length()>5).count();
+		System.out.println(nameList3);
+---------------
+sort():
+-------
+List<Integer> numbers = Arrays.asList(14,4,11,78,2,99,7);
+		//default sorting order
+		List<Integer> numbers2=numbers.stream().sorted().collect(Collectors.toList());
+		System.out.println(numbers2);
+		// customized sorting order
+		List<Integer> numbers3 = numbers.stream().sorted((i1,i2)->i2.compareTo(i1)).collect(Collectors.toList());
+		System.out.println(numbers3);
+------------------
+
+
+Strings:
+--------
+Duplicates:
+-----------
+List<String> strings = Arrays.asList("Ani", "Sou", "Lit", "Sum", "Ani", "Sou", "Pab");
+		
+		strings = strings.stream().distinct().collect(Collectors.toList());
+		System.out.println(strings);
+Duplicates and Unique:
+--------------------
+List<String> strings = Arrays.asList("Ani", "Sou", "Lit", "Sum", "Ani", "Sou", "Pab");
+
+		Set<String> withoutDUplicates = new HashSet<String>();
+		Set<String> duplicates = new HashSet<String>();
+
+		for (String str : strings) {
+			if (!withoutDUplicates.add(str)) {
+				duplicates.add(str);
+			}
+		}
+		System.out.println(withoutDUplicates);
+		System.out.println(duplicates);
+-----------------------
+Find Capital Letters:
+---------------------
+String str = "Venkata Gottemukkala";
+		findCapital(str);
+		findCapitalUsingPredicate(str);
+	}
+	private static void findCapitalUsingPredicate(final String str) {
+		Predicate<Character> predicate = Character::isUpperCase;
+		for (int i = 0; i < str.length(); i++) {
+			if (predicate.test(str.charAt(i))) {
+				System.out.print(str.charAt(i));
+			}
+		}
+		System.out.println();
+	}
+	private static void findCapital(String str) {
+		for (int i = 0; i < str.length(); i++) {
+			if (Character.isUpperCase(str.charAt(i))) {
+				System.out.print(str.charAt(i));
+			}
+		}
+-------------------------
+Predicate:
+---------
+Predicate can be used to define whether a condition is true or false. We can use interfaces to 
+implement java 8 predicate. Predicate is a function that takes a single argument and returns a Boolean 
+value. In java, we don’t have standalone functions, so we define the interfaces for creating the object 
+for specified functions. To interact with the predicate, we use lambda in Java.
+
+At the time of working with predicate, we are using five methods of predicate i.e. test, or, and, isEqual, and negate.
+-----------------
+public class PredInt {
+public static void main(String[] args) {
+Predicate<Integer> pr = p -> (p > 13);
+System.out.println (pr.test (10));
+
+Predicate<String> pred = Predicate.isEqual ("ABC");
+System.out.println (pred.test("PQR"));
+System.out.println (pred.test("ABC"));
+
+Predicate<Integer> pred1 = i -> i > 150;
+Predicate<Integer> pred2 = i -> i < 250;
+Predicate<Integer> pred = pred1.and (pred2);
+boolean rcheck = pred.test(300);
+System.out.println ("300 between 150 and 250: "+ rcheck);
+
+Predicate<Integer> pred = i -> i > 50;
+Predicate<Integer> NegatePredicate = pred.negate ();
+boolean rcheck = NegatePredicate.test (75);
+System.out.println ("50 is greater than 75: "+ rcheck);
+-------------------
+Reverse String:
+---------------
+String str = "Venkata Gottemukkala subbaiah";
+		String reverseStr = Stream.of(str)
+                .map(string -> new StringBuilder(string).reverse())
+                .collect(Collectors.joining());
+ System.out.println(reverseStr);//
+		
+		StringBuilder builder = new StringBuilder(str);
+		String reverse2 = builder.reverse().toString().trim();
+		System.out.println(reverse2); // alakkumettoG atakneV
+Reverse Each Word:
+-----------------
+String str = "Venkata Gottemukkala subbaiah";
+		String reverseWord = Arrays.stream(str.split(" ")).map(word->new StringBuilder(word).reverse()).collect(Collectors.joining(" "));
+		System.out.println(reverseWord);
+---------------
